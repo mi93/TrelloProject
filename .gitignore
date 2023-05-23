@@ -85,4 +85,4 @@ allure-results/*
 target/*
 
 # File containing sensitive data
-.trello.properties
+trello.properties

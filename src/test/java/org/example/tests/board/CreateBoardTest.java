@@ -5,6 +5,8 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.example.properties.TrelloProperties;
+import org.example.requests.board.CreateBoardRequest;
+import org.example.requests.board.DeleteBoardRequest;
 import org.example.url.TrelloUrl;
 import org.junit.jupiter.api.Test;
 
@@ -18,16 +20,7 @@ class CreateBoardTest {
     void createBoardTest() {
 
         // CREATE A BOARD
-        final Response response = given()
-                .contentType(ContentType.JSON)
-                .queryParam("key", TrelloProperties.getKey())
-                .queryParam("token", TrelloProperties.getToken())
-                .queryParam("name", boardName)
-                .when()
-                .post(TrelloUrl.getBoardsUrl())
-                .then()
-                .extract()
-                .response();
+        final Response response = CreateBoardRequest.createBoardRequest(boardName);
 
         Assertions.assertThat(response.statusCode()).isEqualTo(200);
 
@@ -37,15 +30,7 @@ class CreateBoardTest {
 
         // DELETE BOARD
 
-        Response deleteResponse = given()
-                .contentType(ContentType.JSON)
-                .queryParam("key", TrelloProperties.getKey())
-                .queryParam("token", TrelloProperties.getToken())
-                .when()
-                .delete(TrelloUrl.getBoardUrl(boardId))
-                .then()
-                .extract()
-                .response();
+        Response deleteResponse = DeleteBoardRequest.deleteBoardRequest(boardId);
 
         Assertions.assertThat(deleteResponse.statusCode()).isEqualTo(200);
 
