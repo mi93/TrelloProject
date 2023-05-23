@@ -10,7 +10,7 @@ public class CreateBoardRequest {
 
     public static Response createBoardRequest(String boardName) {
         return given()
-                .spec(BaseRequest.requestSpec())
+                .spec(BaseRequest.requestSpecWithLogs())
                 .queryParam("name", boardName)
                 .when()
                 .post(TrelloUrl.getBoardsUrl())
