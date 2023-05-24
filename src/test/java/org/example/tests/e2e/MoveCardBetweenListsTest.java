@@ -4,6 +4,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.example.requests.board.CreateBoardRequest;
+import org.example.requests.board.DeleteBoardRequest;
 import org.example.requests.card.CreateCardRequest;
 import org.example.requests.card.UpdateCardRequest;
 import org.example.requests.list.CreateListRequest;
@@ -30,10 +31,10 @@ class MoveCardBetweenListsTest {
     @Order(1)
     void createBoardTest() {
 
-        final Response boardResponse = CreateBoardRequest.createBoardRequest(boardName);
-        Assertions.assertThat(boardResponse.statusCode()).isEqualTo(200);
+        final Response updateBoardResponse = CreateBoardRequest.createBoardRequest(boardName);
+        Assertions.assertThat(updateBoardResponse.statusCode()).isEqualTo(200);
 
-        JsonPath boardJson = boardResponse.jsonPath();
+        JsonPath boardJson = updateBoardResponse.jsonPath();
         Assertions.assertThat(boardJson.getString("name")).isEqualTo(boardName);
         boardId = boardJson.getString("id");
     }
@@ -97,5 +98,13 @@ class MoveCardBetweenListsTest {
         JsonPath updateCardRJson = updateCardResponse.jsonPath();
         Assertions.assertThat(updateCardRJson.getString("idList")).isEqualTo(secondListId);
 
+    }
+
+    @Test
+    @Order(6)
+    void deleteBoardTest() {
+
+        final Response deleteBoardResponse = DeleteBoardRequest.deleteBoardRequest(boardId);
+        Assertions.assertThat(deleteBoardResponse.statusCode()).isEqualTo(200);
     }
 }
