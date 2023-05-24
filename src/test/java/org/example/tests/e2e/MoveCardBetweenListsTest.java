@@ -4,6 +4,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.example.requests.board.CreateBoardRequest;
+import org.example.requests.card.CreateCardRequest;
 import org.example.requests.list.CreateListRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -21,48 +22,66 @@ class MoveCardBetweenListsTest {
     private static String boardId;
     private static String firstListId;
     private static String secondListId;
+    private static String cardId;
 
     @Test
     @Order(1)
     void createBoardTest() {
 
-        final Response createBoardResponse = CreateBoardRequest.createBoardRequest(boardName);
-        Assertions.assertThat(createBoardResponse.statusCode()).isEqualTo(200);
+        final Response boardResponse = CreateBoardRequest.createBoardRequest(boardName);
+        Assertions.assertThat(boardResponse.statusCode()).isEqualTo(200);
 
-        JsonPath boardJson = createBoardResponse.jsonPath();
+        JsonPath boardJson = boardResponse.jsonPath();
         Assertions.assertThat(boardJson.getString("name")).isEqualTo(boardName);
         boardId = boardJson.getString("id");
     }
 
     @Test
     @Order(2)
-    void CreateFirstListTest() {
+    void createFirstListTest() {
 
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("name", firstListName);
         queryParams.put("idBoard", boardId);
 
-        final Response createFirstListResponse = CreateListRequest.createListRequest(queryParams);
-        Assertions.assertThat(createFirstListResponse.statusCode()).isEqualTo(200);
+        final Response firstListResponse = CreateListRequest.createListRequest(queryParams);
+        Assertions.assertThat(firstListResponse.statusCode()).isEqualTo(200);
 
-        JsonPath firstListJson = createFirstListResponse.jsonPath();
+        JsonPath firstListJson = firstListResponse.jsonPath();
         Assertions.assertThat(firstListJson.getString("name")).isEqualTo(firstListName);
         firstListId = firstListJson.getString("id");
     }
 
     @Test
     @Order(3)
-    void CreateSecondListTest() {
+    void createSecondListTest() {
 
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("name", firstListName);
         queryParams.put("idBoard", boardId);
 
-        final Response createSecondListResponse = CreateListRequest.createListRequest(queryParams);
-        Assertions.assertThat(createSecondListResponse.statusCode()).isEqualTo(200);
+        final Response secondListResponse = CreateListRequest.createListRequest(queryParams);
+        Assertions.assertThat(secondListResponse.statusCode()).isEqualTo(200);
 
-        JsonPath secondListJson = createSecondListResponse.jsonPath();
+        JsonPath secondListJson = secondListResponse.jsonPath();
         Assertions.assertThat(secondListJson.getString("name")).isEqualTo(firstListName);
         secondListId = secondListJson.getString("id");
+    }
+
+    @Test
+    @Order(4)
+    void createCardOnFirstListTest() {
+
+        Map <String, String> queryParams = new HashMap<>();
+        final String cardName = "Quality is not an act, it is a habit.";
+        queryParams.put("idList", firstListId);
+        queryParams.put("name", cardName);
+
+        final Response cardResponse = CreateCardRequest.createCardRequest(queryParams);
+        Assertions.assertThat(cardResponse.statusCode()).isEqualTo(200);
+
+        JsonPath cardJson = cardResponse.jsonPath();
+        Assertions.assertThat(cardJson.getString("name")).isEqualTo(cardName);
+        cardId = cardJson.getString("id");
     }
 }
