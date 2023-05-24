@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.example.requests.board.CreateBoardRequest;
 import org.example.requests.card.CreateCardRequest;
+import org.example.requests.card.UpdateCardRequest;
 import org.example.requests.list.CreateListRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -19,6 +20,7 @@ class MoveCardBetweenListsTest {
 
     private final String boardName = "Just a board";
     private final String firstListName = "First list";
+    private final String secondListName = "Second list";
     private static String boardId;
     private static String firstListId;
     private static String secondListId;
@@ -57,14 +59,14 @@ class MoveCardBetweenListsTest {
     void createSecondListTest() {
 
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("name", firstListName);
+        queryParams.put("name", secondListName);
         queryParams.put("idBoard", boardId);
 
         final Response secondListResponse = CreateListRequest.createListRequest(queryParams);
         Assertions.assertThat(secondListResponse.statusCode()).isEqualTo(200);
 
         JsonPath secondListJson = secondListResponse.jsonPath();
-        Assertions.assertThat(secondListJson.getString("name")).isEqualTo(firstListName);
+        Assertions.assertThat(secondListJson.getString("name")).isEqualTo(secondListName);
         secondListId = secondListJson.getString("id");
     }
 
@@ -83,5 +85,17 @@ class MoveCardBetweenListsTest {
         JsonPath cardJson = cardResponse.jsonPath();
         Assertions.assertThat(cardJson.getString("name")).isEqualTo(cardName);
         cardId = cardJson.getString("id");
+    }
+
+    @Test
+    @Order(5)
+    void moveCardToSecondList() {
+
+        final Response updateCardResponse = UpdateCardRequest.updateCardRequest(secondListId, cardId);
+        Assertions.assertThat(updateCardResponse.statusCode()).isEqualTo(200);
+
+        JsonPath updateCardRJson = updateCardResponse.jsonPath();
+        Assertions.assertThat(updateCardRJson.getString("idList")).isEqualTo(secondListId);
+
     }
 }

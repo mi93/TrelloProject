@@ -28,4 +28,8 @@ public class TrelloUrl {
     public static String getCardsUrl() {
         return getBaseUrl() + "/" + CARDS;
     }
+
+    public static String getCardUrl(String cardId) {
+        return getCardsUrl() + "/" + cardId;
+    }
 }
